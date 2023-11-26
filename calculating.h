@@ -19,10 +19,10 @@ class Calculator : public QWidget
 public:
    Calculator();
    ~Calculator();
+private:
    double Delta(double &day, double &mounth, bool leap);
    double omega(double &hour, double &minute, double &second, int zone);
    double L(double x, double y, double z, double length);
-   //double L_2(double &lati, double &longi, double &alti, double &hour, double &minute, double &second, double &day, double &mounth, double &length, bool leap, int zone);
    double L_total(double &l1, double &l2);
    double L_simple(double &l1, double &l2);
    double L_half(double &l1, double &l2);
@@ -34,7 +34,7 @@ public slots:
 signals:
    void anser(QString &t1,QString &t2,QString &t3,QString &t4,QString &t5,QString &t6,QString &t7);
    void Error();
-public:
+private:
    double delta; 
    double A; 
    double W; 
@@ -69,4 +69,5 @@ public:
    double Reuq; 
    double Rnorth;
 };
+
 #endif

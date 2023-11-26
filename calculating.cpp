@@ -72,76 +72,8 @@ double Calculator::omega(double &hour, double &minute, double &second, int zone)
    return w;
 }
 
-double Calculator::azimut(double phi, int z, double Tc, double teta)//(double Tr, double Ts, double Tc)
+double Calculator::azimut(double phi, int z, double Tc, double teta)
 {
-	/*double Xp = A*c;
-	double Yp = A*s;
-	double Zp = A*t;
-
-	double zNQ = A*((Rnorth*Rnorth/(Reuq*Reuq*t))+t);
-
-	double zMQ = (Reuq*Reuq*t/(Rnorth*Rnorth*Rnorth*Rnorth+Reuq*Reuq*Reuq*Reuq*t*t))*( A*(Rnorth*Rnorth+Reuq*Reuq*t*t) - Rm*Rnorth*Rnorth*(  (cos(rad*(phi-W)))*(cos(rad*delta)) - (Rnorth*Rnorth*(sin(rad*delta))/(Reuq*Reuq*t))
-		                                                                                                                                  )
-		                                                                             );
-	double yMQ = n + ( Rnorth*Rnorth*s*(zMQ - k)/(Reuq*Reuq*t) );
-	double xMQ = m + (c/s)*(yMQ - n);
-	
-	double a = sqrt(xMQ*xMQ + yMQ*yMQ + (zMQ-zNQ)*(zMQ-zNQ));
-	double b = sqrt(Xp*Xp + Yp*Yp + (Zp-zNQ)*(Zp-zNQ));
-	double c_ = sqrt((xMQ-Xp)*(xMQ-Xp) + (yMQ-Yp)*(yMQ-Yp) + (zMQ-Zp)*(zMQ-Zp));
-
-	qDebug()<<"a = "<<a<<", b = "<<b<<", c = "<<c_;
-
-	//double Az = (1/rad)*acos((b*b+c_*c_-a*a)/(2*b*c_));
-
-	
-
-	//qDebug()<<"az["<<i<<"] = "<<az[i];
-
-	double azimuth;
-
-	//прямая а - направлениеп на Север
-	double ax = Xp;
-	double ay = Yp;
-	double az = Zp - zNQ;
-
-	//прямая b - направление тени
-	double bx = xMQ - Xp;
-	double by = yMQ - Yp;
-	double bz = zMQ - Zp;
-
-	double Az = (100000./rad)*acos(abs(ax*bx+ay*by+az*bz)/( (sqrt(ax*ax+ay*ay+az*az))*(sqrt(bx*bx+by*by+bz*bz)) ));
-	qDebug()<<Az;
-	//double Az = 2*(1/rad)*asin(sqrt((a*a - (b-c_)*(b-c_))/(4*b*c_) ));
-	/*double azi[5];
-
-	azi[0] = Az - 360;//(powf(-1., -3))*Az -3*180;
-	azi[1] = Az + 360;//(powf(-1., -2))*Az -2*180;
-	azi[2] = -Az - 360;//(powf(-1., -1))*Az -180;
-	azi[3] = -Az + 360;//(powf(-1., 1))*Az +180;
-	azi[4] = Az;
-	//azi[5] = (powf(-1., 2))*Az +2*180;
-	//azi[6] = (powf(-1., 3))*Az +3*180;
-	int i = 0;
-
-	while( abs( (cos(rad*azi[i]/2))*(cos(rad*azi[i]/2)) - ( ((b+c_)*(b+c_)-a*a)/(4*b*c_) ) ) >= 0.001 && i < 7) {
-		qDebug()<<"az["<<i<<"] = "<<azi[i];
-		i++;
-	}
-
-	double AZ = 180 - azi[i];
-
-	if(W < phi) azimuth = AZ;
-	else azimuth = 360 - AZ;
-
-	qDebug()<<"W - phi = "<<W-phi<<", azimuth = "<<azimuth;
-	
-	double gradus = 180/(Ts-Tr);
-	double Th = Tr + (Ts-Tr)/2;
-	double azimuth;
-	if(Tc <= Th) azimuth = 270 + (Tc - Tr)*gradus;
-	else azimuth = (Tc - Tr)*gradus-90;
-	*/
    double azimuth;
    double W_null=phi;
    double Tnull = 12-(W_null/15);
@@ -272,8 +204,12 @@ void Calculator::init(
       B_*C_*Rm*sin(rad*delta)+
       B_*D_
       -sqrt(
-         -A_*A_*A_*A_*(sin(rad*delta))*(sin(rad*delta))*Rm*Rm-A_*A_*B_*B_*(sin(rad*delta))*(sin(rad*delta))*Rm*Rm-
-         A_*A_*C_*C_*(sin(rad*delta))*(sin(rad*delta))*Rm*Rm+A_*A_*A_*A_*Rm*Rm+A_*A_*B_*B_*Rm*Rm-2*A_*A_*C_*D_*(sin(rad*delta))*Rm-A_*A_*D_*D_
+         -A_*A_*A_*A_*(sin(rad*delta))*(sin(rad*delta))*Rm*Rm-
+         A_*A_*B_*B_*(sin(rad*delta))*(sin(rad*delta))*Rm*Rm-
+         A_*A_*C_*C_*(sin(rad*delta))*(sin(rad*delta))*Rm*Rm+
+         A_*A_*A_*A_*Rm*Rm+
+         A_*A_*B_*B_*Rm*Rm-2*A_*A_*C_*D_*(sin(rad*delta))*Rm-
+         A_*A_*D_*D_
       )
    )/
    (A_*A_+B_*B_);
@@ -575,10 +511,21 @@ void Calculator::init(
 
 double Calculator::L(double x, double y, double z, double length)
 {
-   double el = fabs((Rnorth*c/Reuq)*(x - A*c) + (Rnorth*s/Reuq)*(y - A*s) + (Reuq*t/Rnorth)*(z - A*t))/
+   double el = fabs(
+                  (Rnorth*c/Reuq)*(x - A*c) + 
+                  (Rnorth*s/Reuq)*(y - A*s) + 
+                  (Reuq*t/Rnorth)*(z - A*t)
+               )/
                sqrt(
-                  (Rnorth*Rnorth/(Reuq*Reuq) + Reuq*Reuq*t*t/(Rnorth*Rnorth))*((x-A*c)*(x-A*c) + 
-                  (y-A*s)*(y-A*s) + (z-A*t)*(z-A*t))
+                  (
+                     Rnorth*Rnorth/(Reuq*Reuq) + 
+                     Reuq*Reuq*t*t/(Rnorth*Rnorth)
+                  )*
+                  (
+                     (x-A*c)*(x-A*c) + 
+                     (y-A*s)*(y-A*s) + 
+                     (z-A*t)*(z-A*t)
+                  )
                );
    return length*sqrt(1./(el*el) - 1.);
 }
@@ -635,8 +582,15 @@ void Calculator::onCalc(
       {
          L_1 = length*sqrt(
             (
-               (Rm*Rm-2*Rm*Rnorth*(sin(rad*delta))+Rnorth*Rnorth)/
-               ((Rm*(sin(rad*delta))-Rnorth)*(Rm*(sin(rad*delta))-Rnorth))
+               (
+                  Rm*Rm-
+                  2*Rm*Rnorth*(sin(rad*delta))+
+                  Rnorth*Rnorth
+               )/
+               (
+                  (Rm*(sin(rad*delta))-Rnorth)*
+                  (Rm*(sin(rad*delta))-Rnorth)
+               )
             )-1.
          );
          L_2 = 0;
